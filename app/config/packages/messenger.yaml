@@ -1,0 +1,22 @@
+framework:
+    messenger:
+        buses:
+            command.bus:
+            event.bus:
+                default_middleware: allow_no_handlers
+            query.bus:
+
+        default_bus: command.bus
+
+        transports:
+            sync: 'sync://'
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+
+        routing:
+            App\Core\Application\CQRS\Command\Import: async
+
+when@test:
+    framework:
+        messenger:
+            routing:
+                App\Core\Application\CQRS\Command\Import: sync

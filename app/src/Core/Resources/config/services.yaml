@@ -1,0 +1,52 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    _instanceof:
+        App\Core\Domain\Importer\Importer:
+            tags: [ 'app.importer' ]
+
+        App\Core\Application\CQRS\CommandHandler:
+            tags: { name: messenger.message_handler, bus: command.bus }
+
+        App\Core\Application\CQRS\EventHandler:
+            tags: { name: messenger.message_handler, bus: event.bus }
+
+        App\Core\Application\CQRS\QueryHandler:
+            tags: { name: messenger.message_handler, bus: query.bus }
+
+    App\Core\Application\CQRS\CommandBus: '@App\Core\Infrastructure\Symfony\CQRS\CommandBus'
+
+    App\Core\Application\CQRS\EventBus: '@App\Core\Infrastructure\Symfony\CQRS\EventBus'
+
+    App\Core\Application\CQRS\QueryBus: '@App\Core\Infrastructure\Symfony\CQRS\QueryBus'
+
+    App\Core\Infrastructure\Symfony\CQRS\CommandBus:
+        arguments: [ '@command.bus' ]
+
+    App\Core\Infrastructure\Symfony\CQRS\EventBus:
+        arguments: [ '@event.bus' ]
+
+    App\Core\Infrastructure\Symfony\CQRS\QueryBus:
+        arguments: [ '@query.bus' ]
+
+    App\Core\Application\CQRS\Command\ImportHandler: ~
+
+    App\Core\Domain\Importer\ImporterAggregator:
+        arguments:
+            - !tagged_iterator 'app.importer'
+
+    App\Core\Domain\Provider\DataProvider: '@App\Core\Domain\Provider\DataProvider\MockAPIDataProvider'
+
+    App\Core\Domain\Provider\DataProvider\MockAPIDataProvider: ~
+
+    App\Core\Domain\Manager\FileManager: '@App\Core\Infrastructure\Local\Manger\FileManager'
+
+    App\Core\Domain\Mapper\DataMapper: '@App\Core\Domain\Mapper\DataMapper\ExampleDataMapper'
+
+    App\Core\Domain\Mapper\DataMapper\ExampleDataMapper: ~
+
+    App\Core\Infrastructure\Local\Manger\FileManager: ~
+
+    App\Core\Infrastructure\Symfony\Command\ImportCommand: ~

@@ -1,0 +1,26 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            string $importer1Url: 'http://testapi.com'
+            string $projectDir: '%kernel.project_dir%'
+
+    _instanceof:
+        App\Core\Domain\Importer\Importer:
+            tags: [ 'app.importer' ]
+
+        App\Core\Application\CQRS\CommandHandler:
+            tags: { name: messenger.message_handler, bus: command.bus }
+
+        App\Core\Application\CQRS\EventHandler:
+            tags: { name: messenger.message_handler, bus: event.bus }
+
+        App\Core\Application\CQRS\QueryHandler:
+            tags: { name: messenger.message_handler, bus: query.bus }
+
+    App\Importer1\Domain\Importer1: '@App\Importer1\Domain\Importer\APIImporter1'
+
+    App\Importer1\Domain\Importer\APIImporter1: ~
+
+    App\Importer1\Infrastructure\Symfony\Command\Importer1Command: ~
